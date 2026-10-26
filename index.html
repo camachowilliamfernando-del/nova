@@ -1,0 +1,1371 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="referrer" content="no-referrer">
+<title>NOVA · Apertura de cuenta (demo escolar)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" crossorigin="anonymous" referrerpolicy="no-referrer">
+<style>
+:root{
+  --bg:#080b1a; --bg-2:#0c1029; --surface:#101533; --surface-2:#161d42; --surface-3:#1d2652;
+  --line:#242e5c; --line-strong:#3a4685; --text:#eef1ff; --muted:#8a93c4;
+  --violet:#7b5cff; --violet-soft:#9d86ff; --violet-glow:rgba(123,92,255,.22);
+  --coral:#ff6b8a; --coral-deep:#e04a6c; --cyan:#38e1ff; --danger:#ff5d6c;
+  --radius:20px; --radius-sm:12px; --radius-pill:999px;
+  --shadow:0 20px 50px rgba(4,6,20,.65); color-scheme:dark;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  background:
+    radial-gradient(90% 70% at 15% -10%, rgba(123,92,255,.22), transparent 55%),
+    radial-gradient(70% 60% at 110% 110%, rgba(255,107,138,.14), transparent 60%),
+    radial-gradient(60% 50% at 50% 50%, rgba(56,225,255,.05), transparent 70%),
+    var(--bg);
+  color:var(--text);
+  font-family:'Sora',system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  display:flex;justify-content:center;overflow-x:hidden;-webkit-font-smoothing:antialiased;
+}
+body::before{
+  content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
+  background-image:
+    linear-gradient(rgba(123,92,255,.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(123,92,255,.05) 1px, transparent 1px);
+  background-size:44px 44px;
+  mask-image:radial-gradient(75% 70% at 50% 40%, black 10%, transparent 80%);
+  -webkit-mask-image:radial-gradient(75% 70% at 50% 40%, black 10%, transparent 80%);
+}
+button{font:inherit}
+:focus-visible{outline:2px solid var(--violet-soft);outline-offset:3px}
+.app{width:100%;max-width:440px;min-height:100%;display:flex;flex-direction:column;padding:24px 20px 28px;position:relative}
+.screen{
+  display:flex;flex-direction:column;flex:1;position:absolute;inset:0;padding:24px 20px 28px;
+  opacity:0;transform:translateY(12px);pointer-events:none;
+  transition:opacity .28s ease,transform .28s ease;
+}
+.screen.active{opacity:1;transform:none;pointer-events:auto;position:relative;padding:0}
+.top{display:flex;align-items:center;justify-content:space-between;margin-bottom:26px;min-height:38px;gap:12px}
+.brand{
+  display:flex;align-items:center;gap:11px;font-weight:800;font-size:1.08rem;
+  letter-spacing:.14em;text-transform:uppercase;color:var(--text);
+}
+.brand .mark{
+  width:34px;height:34px;flex-shrink:0;border-radius:50%;display:grid;place-items:center;position:relative;
+  background:radial-gradient(circle at 32% 28%, #2a2466, #12163a);
+  border:1.5px solid var(--violet);box-shadow:0 0 0 3px var(--violet-glow), inset 0 0 12px rgba(123,92,255,.35);
+}
+.brand .mark::after{content:"";position:absolute;inset:-6px;border-radius:50%;border:1px dashed rgba(157,134,255,.35);animation:orbit 9s linear infinite}
+@keyframes orbit{to{transform:rotate(360deg)}}
+.brand .mark svg{width:16px;height:16px;display:block}
+.brand .word i{font-style:normal;background:linear-gradient(90deg,var(--violet-soft),var(--coral));-webkit-background-clip:text;background-clip:text;color:transparent}
+.steps{display:flex;align-items:center;gap:0}
+.steps b{
+  width:22px;height:22px;border-radius:50%;border:1.5px solid var(--line-strong);
+  display:grid;place-items:center;font-family:'IBM Plex Mono',monospace;font-size:.62rem;
+  color:var(--muted);font-weight:600;transition:all .25s;position:relative;
+}
+.steps b.on{border-color:var(--violet);color:#fff;background:linear-gradient(140deg,var(--violet),var(--coral));box-shadow:0 0 0 3px var(--violet-glow)}
+.steps b + b::before{content:"";position:absolute;left:-14px;top:50%;width:12px;height:1px;background:var(--line-strong)}
+.back{
+  background:var(--surface);border:1.5px solid var(--line);color:var(--muted);cursor:pointer;
+  padding:8px 16px;border-radius:var(--radius-pill);font-size:.78rem;font-family:'IBM Plex Mono',monospace;transition:all .2s;
+}
+.back:hover{color:var(--violet-soft);border-color:var(--violet);background:rgba(123,92,255,.08)}
+h1{
+  font-size:1.95rem;line-height:1.12;font-weight:800;letter-spacing:-.03em;
+  background:linear-gradient(120deg,#fff 30%, var(--violet-soft) 75%, var(--coral));
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+h2{font-size:1.45rem;line-height:1.2;font-weight:700;letter-spacing:-.02em}
+.lead{color:var(--muted);font-size:.92rem;line-height:1.6;margin-top:10px;max-width:36ch}
+.hero{flex:1;display:flex;flex-direction:column;justify-content:center;padding:10px 0 24px}
+.card-art{
+  height:180px;border-radius:28px;margin-bottom:30px;position:relative;overflow:hidden;
+  background:
+    radial-gradient(120% 130% at 15% 0%, rgba(123,92,255,.55), transparent 55%),
+    radial-gradient(100% 120% at 100% 100%, rgba(255,107,138,.45), transparent 55%),
+    linear-gradient(160deg, #1a1f4a, #0d1230);
+  border:1.5px solid rgba(157,134,255,.35);padding:20px;display:flex;flex-direction:column;justify-content:space-between;
+  box-shadow:var(--shadow), inset 0 1px 0 rgba(255,255,255,.08);
+}
+.card-art::after{content:"";position:absolute;right:-40px;top:-40px;width:200px;height:200px;border-radius:50%;border:1.5px dashed rgba(255,255,255,.18);pointer-events:none}
+.card-art .num{font-family:'IBM Plex Mono',monospace;font-size:.95rem;letter-spacing:.18em;color:var(--text);font-variant-numeric:tabular-nums;text-shadow:0 1px 8px rgba(0,0,0,.4)}
+.orb{
+  width:44px;height:44px;border-radius:50%;position:relative;display:grid;place-items:center;
+  background:radial-gradient(circle at 32% 28%, #ffffff22, #00000055);
+  border:1.5px solid rgba(255,255,255,.55);box-shadow:0 0 22px rgba(255,255,255,.18), inset 0 0 14px rgba(255,255,255,.12);
+}
+.orb::before{content:"";position:absolute;inset:-9px;border-radius:50%;border:1px solid rgba(255,255,255,.28)}
+.orb::after{
+  content:"";position:absolute;width:6px;height:6px;border-radius:50%;background:var(--cyan);box-shadow:0 0 10px var(--cyan);
+  top:-4px;left:50%;transform:translateX(-50%);animation:orbit 6s linear infinite;transform-origin:3px 31px;
+}
+.perks{display:flex;gap:14px;margin-top:20px;color:var(--muted);font-size:.74rem;flex-wrap:wrap;font-family:'IBM Plex Mono',monospace}
+.perks span{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:var(--radius-pill);background:var(--surface);border:1px solid var(--line)}
+.perks svg{width:11px;height:11px;stroke:var(--coral);fill:none;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+.btn{
+  width:100%;border:1.5px solid var(--line-strong);border-radius:var(--radius-pill);
+  padding:16px 22px;font-weight:600;font-size:.95rem;cursor:pointer;transition:all .18s;
+  position:relative;overflow:hidden;-webkit-tap-highlight-color:transparent;text-align:center;color:var(--text);
+  background:var(--surface);letter-spacing:.01em;
+}
+.btn:hover:not(:disabled){transform:translateY(-1px)}
+.btn:active{transform:translateY(1px)}
+.btn:disabled{opacity:.4;cursor:not-allowed;transform:none}
+.btn-primary{background:linear-gradient(120deg, var(--violet), var(--coral));border-color:transparent;color:#fff;box-shadow:0 12px 30px rgba(123,92,255,.35)}
+.btn-primary:hover:not(:disabled){box-shadow:0 16px 40px rgba(123,92,255,.5)}
+.btn-ghost{background:transparent;color:var(--muted);margin-top:10px;border-color:var(--line)}
+.btn-ghost:hover:not(:disabled){color:var(--text);border-color:var(--line-strong);background:var(--surface)}
+.btn-amber{background:var(--surface);color:#fff;border-color:var(--coral);box-shadow:0 8px 24px rgba(255,107,138,.15)}
+.btn-amber:hover:not(:disabled){background:rgba(255,107,138,.1);box-shadow:0 12px 30px rgba(255,107,138,.28)}
+.actions{margin-top:auto;padding-top:22px}
+form{margin-top:22px;display:flex;flex-direction:column;gap:14px;flex:1}
+.field{position:relative;padding:14px 18px 4px;border-radius:var(--radius-sm);background:var(--surface);border:1.5px solid var(--line);transition:border-color .2s,background .2s}
+.field:focus-within{border-color:var(--violet);background:var(--surface-2)}
+.field label{
+  position:absolute;top:-8px;left:14px;font-size:.66rem;color:var(--muted);font-weight:600;
+  letter-spacing:.09em;text-transform:uppercase;font-family:'IBM Plex Mono',monospace;
+  background:var(--bg);padding:0 6px;transition:color .2s;
+}
+.field:focus-within label{color:var(--violet-soft)}
+.field input{width:100%;background:transparent;border:0;padding:6px 0 10px;color:var(--text);font:inherit;font-size:.98rem}
+.field input:focus{outline:none}
+.field input::placeholder{color:var(--muted);opacity:.45}
+.field.bad{border-color:var(--danger)}
+.field.bad label{color:var(--danger)}
+.err{display:none;color:var(--danger);font-size:.72rem;margin-top:6px}
+.field.bad .err{display:block}
+.secure{
+  display:flex;gap:11px;align-items:flex-start;font-size:.74rem;color:var(--muted);line-height:1.55;
+  background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-sm);padding:13px 15px;
+}
+.secure svg{width:15px;height:15px;flex-shrink:0;margin-top:2px;stroke:var(--violet-soft);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.scan-wrap{display:flex;justify-content:center;margin:22px 0 18px}
+.frame{
+  position:relative;width:280px;height:280px;border-radius:50%;
+  background:radial-gradient(circle at 50% 45%, var(--surface-3), var(--surface));
+  border:1.5px solid var(--line-strong);overflow:hidden;transition:border-color .3s, box-shadow .3s;
+  box-shadow:inset 0 0 50px rgba(0,0,0,.5);
+}
+.frame.scanning{border-color:var(--violet);box-shadow:0 0 40px rgba(123,92,255,.45), inset 0 0 50px rgba(0,0,0,.5)}
+.frame.ok{border-color:var(--cyan);box-shadow:0 0 46px rgba(56,225,255,.55), inset 0 0 50px rgba(0,0,0,.5)}
+.frame.warn{border-color:var(--coral);box-shadow:0 0 40px rgba(255,107,138,.45), inset 0 0 50px rgba(0,0,0,.5)}
+.frame video{width:100%;height:100%;object-fit:cover;transform:scaleX(-1);display:block}
+.frame .fallback{position:absolute;inset:0;display:none;align-items:center;justify-content:center;text-align:center;padding:30px;color:var(--muted);font-size:.8rem;line-height:1.55;background:var(--surface-2);border-radius:50%}
+.ring{position:absolute;inset:10px;border-radius:50%;pointer-events:none;border:1.5px dashed rgba(157,134,255,.35)}
+.ring::before{content:"";position:absolute;inset:14px;border-radius:50%;border:1px solid rgba(56,225,255,.18)}
+.refgrid{
+  position:absolute;inset:0;pointer-events:none;border-radius:50%;
+  background-image:radial-gradient(circle, rgba(157,134,255,.45) 1px, transparent 1px);
+  background-size:22px 22px;background-position:center;opacity:.5;
+  mask-image:radial-gradient(circle at center, black 35%, transparent 72%);
+  -webkit-mask-image:radial-gradient(circle at center, black 35%, transparent 72%);
+}
+.scanline{
+  position:absolute;inset:0;border-radius:50%;display:none;
+  background:conic-gradient(from 0deg, transparent 0deg, transparent 320deg, rgba(123,92,255,.55) 350deg, var(--cyan) 360deg);
+  animation:radar 1.8s linear infinite;
+  mask-image:radial-gradient(circle at center, transparent 40%, black 42%);
+  -webkit-mask-image:radial-gradient(circle at center, transparent 40%, black 42%);
+}
+.frame.scanning .scanline{display:block}
+@keyframes radar{to{transform:rotate(360deg)}}
+.tick{position:absolute;inset:0;display:none;align-items:center;justify-content:center;background:rgba(8,11,26,.55);border-radius:50%}
+.tick svg{width:76px;height:76px;stroke:var(--cyan);fill:none;stroke-width:3.5;stroke-linecap:round;stroke-linejoin:round;filter:drop-shadow(0 0 18px rgba(56,225,255,.7))}
+.frame.ok .tick{display:flex}
+.hint{text-align:center;font-size:.84rem;color:var(--muted);min-height:2.6em;line-height:1.5;transition:color .3s;font-family:'IBM Plex Mono',monospace}
+.bar{height:5px;border-radius:var(--radius-pill);background:var(--surface-2);overflow:hidden;margin:12px 0 4px;visibility:hidden}
+.bar.show{visibility:visible}
+.bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--violet),var(--cyan),var(--coral));transition:width .12s linear}
+.pct{text-align:center;font-size:.72rem;color:var(--muted);min-height:1.2em;font-family:'IBM Plex Mono',monospace}
+.done{flex:1;display:flex;flex-direction:column;align-items:center;text-align:center;justify-content:center;gap:4px}
+.seal{
+  width:92px;height:92px;margin-bottom:26px;
+  background:radial-gradient(circle at 30% 28%, rgba(157,134,255,.55), rgba(123,92,255,.12) 60%), linear-gradient(160deg,#1a1f4a,#0d1230);
+  border:2px solid var(--violet-soft);border-radius:50%;display:flex;align-items:center;justify-content:center;
+  animation:pop .55s cubic-bezier(.2,1.4,.4,1);box-shadow:0 0 0 8px rgba(123,92,255,.10), 0 0 46px rgba(123,92,255,.5);position:relative;
+}
+.seal::before{content:"";position:absolute;inset:-10px;border-radius:50%;border:1.5px dashed rgba(56,225,255,.4);animation:orbit 12s linear infinite}
+.seal svg{width:40px;height:40px;stroke:var(--cyan);fill:none;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:50;stroke-dashoffset:50;animation:draw .55s .3s forwards;filter:drop-shadow(0 0 12px rgba(56,225,255,.7))}
+@keyframes pop{from{transform:scale(.4);opacity:0}}
+@keyframes draw{to{stroke-dashoffset:0}}
+.card3d{
+  width:100%;margin-top:24px;padding:22px;border-radius:24px;
+  background:
+    radial-gradient(120% 130% at 0% 0%, rgba(123,92,255,.45), transparent 55%),
+    radial-gradient(100% 120% at 100% 100%, rgba(255,107,138,.35), transparent 55%),
+    linear-gradient(160deg,#1a1f4a,#0d1230);
+  border:1.5px solid rgba(157,134,255,.35);box-shadow:var(--shadow), inset 0 1px 0 rgba(255,255,255,.08);
+  color:var(--text);text-align:left;position:relative;overflow:hidden;font-variant-numeric:tabular-nums;
+}
+.card3d::after{content:"";position:absolute;bottom:-60px;right:-60px;width:180px;height:180px;border-radius:50%;border:1.5px dashed rgba(255,255,255,.15);pointer-events:none}
+.card3d .orb{margin-bottom:16px;width:40px;height:40px}
+.card3d small{display:block;color:rgba(238,241,255,.7);font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;font-family:'IBM Plex Mono',monospace}
+.card3d .num{display:block;font-family:'IBM Plex Mono',monospace;font-size:1.1rem;letter-spacing:.14em;margin:6px 0 18px;color:#fff}
+.card3d .saldo{font-size:2.1rem;font-weight:800;letter-spacing:-.03em;font-family:'IBM Plex Mono',monospace;background:linear-gradient(90deg,#fff,var(--cyan));-webkit-background-clip:text;background-clip:text;color:transparent}
+.card3d .owner{font-size:.74rem;color:rgba(238,241,255,.7);margin-top:6px;text-transform:uppercase;letter-spacing:.12em;font-family:'IBM Plex Mono',monospace}
+.acct{width:100%;margin-top:18px;text-align:left;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:4px 18px}
+.acct .row{display:flex;justify-content:space-between;font-size:.84rem;padding:13px 0;border-bottom:1px solid var(--line)}
+.acct .row:last-child{border-bottom:0}
+.acct .row span:first-child{color:var(--muted)}
+.acct .row span:last-child{font-family:'IBM Plex Mono',monospace;font-size:.82rem}
+.accounts-list{margin-top:16px;display:flex;flex-direction:column;gap:10px;max-height:240px;overflow-y:auto;padding-right:4px}
+.accounts-list::-webkit-scrollbar{width:5px}
+.accounts-list::-webkit-scrollbar-thumb{background:var(--line-strong);border-radius:3px}
+.account-item{
+  display:flex;align-items:center;gap:13px;background:var(--surface);border:1.5px solid var(--line);
+  border-radius:var(--radius);padding:13px 16px;cursor:pointer;transition:all .18s;text-align:left;width:100%;color:var(--text);
+}
+.account-item:hover,.account-item:focus{border-color:var(--violet);outline:none;background:var(--surface-2)}
+.account-item[aria-selected="true"]{border-color:var(--violet);background:linear-gradient(120deg, rgba(123,92,255,.14), rgba(255,107,138,.06));box-shadow:0 0 0 3px var(--violet-glow)}
+.account-item .avatar{width:42px;height:42px;border-radius:50%;background:linear-gradient(140deg,var(--violet),var(--coral));display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;flex-shrink:0;font-size:.88rem;box-shadow:0 4px 14px rgba(123,92,255,.35)}
+.account-item .info{flex:1;min-width:0}
+.account-item .info strong{display:block;font-size:.88rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.account-item .info small{display:block;font-size:.7rem;color:var(--muted);margin-top:3px;letter-spacing:.07em;font-variant-numeric:tabular-nums;font-family:'IBM Plex Mono',monospace}
+.account-item .chev{color:var(--muted);font-size:1.2rem;flex-shrink:0;font-family:'IBM Plex Mono',monospace}
+.empty-state{text-align:center;color:var(--muted);font-size:.82rem;padding:30px 16px;background:var(--surface);border:1.5px dashed var(--line-strong);border-radius:var(--radius);line-height:1.6}
+.masked{letter-spacing:.1em}
+.selected-badge{
+  display:inline-flex;align-items:center;gap:7px;margin-top:12px;font-size:.72rem;color:var(--violet-soft);
+  background:linear-gradient(120deg, rgba(123,92,255,.16), rgba(255,107,138,.08));
+  border:1px solid rgba(157,134,255,.35);border-radius:var(--radius-pill);padding:7px 14px;font-family:'IBM Plex Mono',monospace;
+}
+.selected-badge::before{content:"●";font-size:.5rem;color:var(--cyan)}
+.toast{
+  position:fixed;left:50%;bottom:24px;transform:translate(-50%,20px);background:var(--surface-2);color:var(--text);
+  border:1px solid var(--line-strong);border-radius:var(--radius-pill);padding:13px 22px;font-size:.82rem;
+  box-shadow:0 16px 40px rgba(0,0,0,.7);opacity:0;pointer-events:none;transition:opacity .3s,transform .3s;z-index:99;max-width:90vw;
+  font-family:'IBM Plex Mono',monospace;
+}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+.toast.err{border-color:var(--danger);color:#ffc7cc}
+.loader{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--bg);z-index:200;gap:20px;transition:opacity .4s}
+.loader.hide{opacity:0;pointer-events:none}
+.spinner{width:44px;height:44px;border-radius:50%;border:2px solid var(--line-strong);border-top-color:var(--violet);border-right-color:var(--coral);animation:spin 1s linear infinite;box-shadow:0 0 20px rgba(123,92,255,.4)}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loader p{color:var(--muted);font-size:.82rem;font-family:'IBM Plex Mono',monospace}
+.notice{
+  font-size:.7rem;color:var(--muted);line-height:1.5;border-left:2px solid var(--coral);
+  padding:8px 12px;background:var(--surface);border-radius:0 var(--radius-sm) var(--radius-sm) 0;margin-top:10px;
+  font-family:'IBM Plex Mono',monospace;
+}
+.chip{display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:.68rem;color:var(--cyan);border:1px solid rgba(56,225,255,.3);padding:3px 9px;border-radius:999px;margin-top:8px}
+</style>
+</head>
+<body>
+
+<div class="loader" id="loader">
+  <div class="spinner"></div>
+  <p id="loaderMsg">Inicializando…</p>
+</div>
+
+<main class="app">
+
+  <!-- BIENVENIDA -->
+  <section class="screen active" id="s-welcome">
+    <div class="top">
+      <div class="brand">
+        <span class="mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none">
+            <circle cx="12" cy="12" r="3.2" fill="#38e1ff"/>
+            <path d="M12 4.5a7.5 7.5 0 017.5 7.5" stroke="#9d86ff" stroke-width="2" stroke-linecap="round"/>
+            <path d="M12 19.5A7.5 7.5 0 014.5 12" stroke="#ff6b8a" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </span>
+        <span class="word">Nov<i>a</i></span>
+      </div>
+    </div>
+    <div class="hero">
+      <div class="card-art" aria-hidden="true">
+        <div class="orb"></div>
+        <div class="num">•••• •••• •••• 0427</div>
+      </div>
+      <h1>Tu cuenta, lista en tres minutos.</h1>
+      <p class="lead">Demostración escolar de apertura de cuenta con verificación facial en el navegador. <strong>No es un banco real</strong> ni debe usarse con datos verdaderos.</p>
+      <div class="perks">
+        <span><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>Sin costo</span>
+        <span><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>Individual</span>
+      </div>
+      <div class="notice">Los saldos son ficticios. La verificación facial se ejecuta íntegramente en tu dispositivo y no certifica identidad real.</div>
+    </div>
+    <div class="actions">
+      <button class="btn btn-primary" data-go="s-register">Abrir cuenta nueva</button>
+      <button class="btn btn-ghost" id="btnLogin">Iniciar sesión</button>
+    </div>
+  </section>
+
+  <!-- REGISTRO -->
+  <section class="screen" id="s-register">
+    <div class="top">
+      <button class="back" data-go="s-welcome" type="button">‹ Volver</button>
+      <div class="steps"><b class="on">1</b><b>2</b><b>3</b></div>
+    </div>
+    <h2>Cuéntanos quién eres</h2>
+    <p class="lead">Usa datos de ejemplo. No introduzcas información personal real en esta demo.</p>
+    <form id="form" novalidate>
+      <div class="field">
+        <input id="nombres" autocomplete="off" placeholder=" " required maxlength="80">
+        <label for="nombres">Nombres y apellidos</label>
+        <div class="err">Escribe tu nombre completo (nombre y apellido).</div>
+      </div>
+      <div class="field">
+        <input id="cedula" inputmode="numeric" maxlength="13" placeholder=" " required autocomplete="off">
+        <label for="cedula">Cédula o documento</label>
+        <div class="err">Ingresa entre 8 y 13 dígitos, solo números.</div>
+      </div>
+      <div class="field">
+        <input id="correo" type="email" autocomplete="off" placeholder=" " required maxlength="120">
+        <label for="correo">Correo electrónico</label>
+        <div class="err">Revisa el formato del correo.</div>
+      </div>
+      <div class="field">
+        <input id="telefono" type="tel" inputmode="tel" autocomplete="off" placeholder=" " required maxlength="16">
+        <label for="telefono">Teléfono móvil</label>
+        <div class="err">Ingresa un teléfono de 9 a 12 dígitos.</div>
+      </div>
+      <div class="secure">
+        <svg viewBox="0 0 24 24"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/></svg>
+        <span>Los datos se guardan <strong>cifrados con AES-GCM</strong> usando una clave derivada de un PIN de 6 dígitos que tú eliges. La plantilla facial se guarda como un vector de rasgos; <strong>no es irreversible ni anónima</strong> y no debe considerarse prueba de identidad real.</span>
+      </div>
+      <div class="actions">
+        <button class="btn btn-primary" type="submit" id="btnSubmitRegistro">Continuar →</button>
+      </div>
+    </form>
+  </section>
+
+  <!-- CONSENTIMIENTO BIOMÉTRICO -->
+  <section class="screen" id="s-consent">
+    <div class="top">
+      <button class="back" data-go="s-register" type="button">‹ Volver</button>
+      <div class="steps"><b class="on">1</b><b>2</b><b>3</b></div>
+    </div>
+    <h2>Consentimiento para datos biométricos</h2>
+    <p class="lead">Antes de activar la cámara, lee y acepta lo siguiente. Esta demo educativa no sustituye un consentimiento válido bajo la LOPDP.</p>
+    <div class="secure" style="margin-top:16px">
+      <svg viewBox="0 0 24 24"><path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6l8-4z"/></svg>
+      <span>
+        <strong>Qué se captura:</strong> fotogramas de tu cámara procesados en memoria.<br>
+        <strong>Qué se guarda:</strong> un vector numérico de 32 dimensiones (rasgos de luminancia y orientación de bordes) junto con tus datos de cuenta, todo cifrado.<br>
+        <strong>Para qué:</strong> comparar tu rostro en futuros inicios de sesión en este mismo dispositivo.<br>
+        <strong>Dónde:</strong> únicamente en el almacenamiento local de tu navegador. Nada se envía a un servidor.<br>
+        <strong>Limitaciones:</strong> esta verificación no prueba que seas una persona real frente a una foto; puede tener falsos positivos y falsos negativos.<br>
+        <strong>Alternativa:</strong> puedes eliminar tu cuenta borrando los datos del sitio en tu navegador.
+      </span>
+    </div>
+    <div class="field" style="margin-top:16px">
+      <label for="consentCheck" style="position:static;background:transparent;color:var(--text);font-size:.8rem;text-transform:none;letter-spacing:0;font-family:'Sora',sans-serif;font-weight:500;padding:0;display:flex;align-items:center;gap:10px;cursor:pointer">
+        <input type="checkbox" id="consentCheck" style="width:18px;height:18px;accent-color:var(--violet)">
+        Acepto el tratamiento descrito y entiendo sus riesgos.
+      </label>
+    </div>
+    <div class="actions">
+      <button class="btn btn-primary" id="btnConsent" type="button" disabled>Continuar a verificación</button>
+      <button class="btn btn-ghost" data-go="s-register" type="button">No acepto</button>
+    </div>
+  </section>
+
+  <!-- VERIFICACIÓN FACIAL (registro) -->
+  <section class="screen" id="s-face">
+    <div class="top">
+      <button class="back" id="faceBack" type="button">‹ Volver</button>
+      <div class="steps"><b class="on">1</b><b class="on">2</b><b>3</b></div>
+    </div>
+    <h2>Verifica tu identidad</h2>
+    <p class="lead">Ubica tu rostro dentro del círculo, con buena luz y sin lentes oscuros.</p>
+    <div class="scan-wrap">
+      <div class="frame" id="oval">
+        <video id="video" autoplay muted playsinline></video>
+        <div class="fallback" id="fallback">No pudimos usar la cámara. Revisa los permisos del navegador.</div>
+        <div class="refgrid"></div>
+        <div class="ring"></div>
+        <div class="scanline"></div>
+        <div class="tick"><svg viewBox="0 0 48 48"><path d="M10 25l9 9 19-20"/></svg></div>
+      </div>
+    </div>
+    <div class="hint" id="hint" aria-live="polite">Activando cámara…</div>
+    <div class="bar" id="bar"><i id="barFill"></i></div>
+    <div class="pct" id="pct"></div>
+    <div class="actions"><button class="btn btn-amber" id="btnScan" disabled type="button">Escanear rostro</button></div>
+  </section>
+
+  <!-- ÉXITO -->
+  <section class="screen" id="s-done">
+    <div class="top">
+      <div class="brand">
+        <span class="mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none">
+            <circle cx="12" cy="12" r="3.2" fill="#38e1ff"/>
+            <path d="M12 4.5a7.5 7.5 0 017.5 7.5" stroke="#9d86ff" stroke-width="2" stroke-linecap="round"/>
+            <path d="M12 19.5A7.5 7.5 0 014.5 12" stroke="#ff6b8a" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </span>
+        <span class="word">Nov<i>a</i></span>
+      </div>
+      <div class="steps"><b class="on">1</b><b class="on">2</b><b class="on">3</b></div>
+    </div>
+    <div class="done">
+      <div class="seal"><svg viewBox="0 0 48 48"><path d="M10 25l9 9 19-20"/></svg></div>
+      <h2 id="doneTitle">¡Cuenta creada!</h2>
+      <p class="lead" style="text-align:center;margin-left:auto;margin-right:auto">Tu identidad fue registrada localmente y tu cuenta demo ya está lista.</p>
+      <div class="card3d" id="doneCard">
+        <div class="orb"></div>
+        <small>Número de cuenta (demo)</small>
+        <span class="num" id="acctNum">—</span>
+        <small>Saldo ficticio disponible</small>
+        <div class="saldo" id="doneSaldo">$0.00</div>
+      </div>
+      <div class="secure" style="margin-top:16px;text-align:left">
+        <svg viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><path d="M17 21v-8H7v8M7 3v5h8"/></svg>
+        <span>Pulsa <strong>Guardar cuenta</strong> para cifrarla con tu PIN y registrarla en este dispositivo. Después podrás iniciar sesión con tu rostro.</span>
+      </div>
+    </div>
+    <div class="actions">
+      <button class="btn btn-amber" id="btnSave" type="button">Guardar cuenta</button>
+      <button class="btn btn-primary" id="btnCopy" type="button" style="margin-top:10px">Copiar número</button>
+      <button class="btn btn-ghost" id="btnRestart" type="button">Ir al inicio</button>
+    </div>
+  </section>
+
+  <!-- LOGIN: seleccionar cuenta -->
+  <section class="screen" id="s-login">
+    <div class="top">
+      <button class="back" data-go="s-welcome" type="button">‹ Volver</button>
+      <div class="steps"><b class="on">1</b><b>2</b><b>3</b></div>
+    </div>
+    <h2>Inicia sesión</h2>
+    <p class="lead">Selecciona tu cuenta. Después verificaremos tu rostro.</p>
+    <div id="accountsContainer" style="margin-top:18px"></div>
+  </section>
+
+  <!-- LOGIN: PIN para desbloquear cuentas -->
+  <section class="screen" id="s-pin">
+    <div class="top">
+      <button class="back" id="pinBack" type="button">‹ Volver</button>
+      <div class="steps"><b class="on">1</b><b class="on">2</b><b>3</b></div>
+    </div>
+    <h2>Desbloquea tus cuentas</h2>
+    <p class="lead">Ingresa tu PIN de 6 dígitos para descifrar las cuentas guardadas en este dispositivo.</p>
+    <div class="field" style="margin-top:18px">
+      <input id="pinInput" type="password" inputmode="numeric" maxlength="6" autocomplete="off" placeholder=" ">
+      <label for="pinInput">PIN de 6 dígitos</label>
+      <div class="err">PIN incorrecto.</div>
+    </div>
+    <div id="pinAccountsContainer"></div>
+    <div class="actions">
+      <button class="btn btn-primary" id="btnPinUnlock" type="button">Desbloquear</button>
+    </div>
+  </section>
+
+  <!-- PIN: establecer al guardar -->
+  <section class="screen" id="s-pin-set">
+    <div class="top">
+      <button class="back" id="pinSetBack" type="button">‹ Volver</button>
+      <div class="steps"><b class="on">1</b><b class="on">2</b><b class="on">3</b></div>
+    </div>
+    <h2>Protege tu cuenta</h2>
+    <p class="lead">Elige un PIN de 6 dígitos. Se usará para cifrar los datos de tu cuenta en este dispositivo. <strong>Si lo olvidas, perderás acceso a la cuenta local.</strong></p>
+    <div class="field" style="margin-top:18px">
+      <input id="pinNew" type="password" inputmode="numeric" maxlength="6" autocomplete="off" placeholder=" ">
+      <label for="pinNew">Nuevo PIN</label>
+      <div class="err">Debe tener 6 dígitos.</div>
+    </div>
+    <div class="field">
+      <input id="pinConfirm" type="password" inputmode="numeric" maxlength="6" autocomplete="off" placeholder=" ">
+      <label for="pinConfirm">Confirmar PIN</label>
+      <div class="err">Los PIN no coinciden.</div>
+    </div>
+    <div class="actions">
+      <button class="btn btn-primary" id="btnPinSave" type="button">Cifrar y guardar</button>
+    </div>
+  </section>
+
+  <!-- LOGIN: verificación facial -->
+  <section class="screen" id="s-login-face">
+    <div class="top">
+      <button class="back" id="loginFaceBack" type="button">‹ Volver</button>
+      <div class="steps"><b class="on">1</b><b class="on">2</b><b>3</b></div>
+    </div>
+    <h2>Verificación facial</h2>
+    <p class="lead" id="loginFaceLead">Mira a la cámara y pulsa «Escanear rostro» para confirmar tu identidad.</p>
+    <div id="selectedAccountInfo"></div>
+    <div class="scan-wrap">
+      <div class="frame" id="ovalLogin">
+        <video id="videoLogin" autoplay muted playsinline></video>
+        <div class="fallback" id="fallbackLogin">No pudimos usar la cámara. Revisa los permisos del navegador.</div>
+        <div class="refgrid"></div>
+        <div class="ring"></div>
+        <div class="scanline"></div>
+        <div class="tick"><svg viewBox="0 0 48 48"><path d="M10 25l9 9 19-20"/></svg></div>
+      </div>
+    </div>
+    <div class="hint" id="hintLogin" aria-live="polite">Activando cámara…</div>
+    <div class="bar" id="barLogin"><i id="barFillLogin"></i></div>
+    <div class="pct" id="pctLogin"></div>
+    <div class="actions"><button class="btn btn-amber" id="btnScanLogin" disabled type="button">Escanear rostro</button></div>
+  </section>
+
+  <!-- DASHBOARD -->
+  <section class="screen" id="s-dashboard">
+    <div class="top">
+      <div class="brand">
+        <span class="mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none">
+            <circle cx="12" cy="12" r="3.2" fill="#38e1ff"/>
+            <path d="M12 4.5a7.5 7.5 0 017.5 7.5" stroke="#9d86ff" stroke-width="2" stroke-linecap="round"/>
+            <path d="M12 19.5A7.5 7.5 0 014.5 12" stroke="#ff6b8a" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </span>
+        <span class="word">Nov<i>a</i></span>
+      </div>
+      <button class="back" id="btnLogout" type="button">Cerrar sesión</button>
+    </div>
+    <h2 id="dashHello">Hola de nuevo</h2>
+    <p class="lead">Este es tu saldo ficticio actualizado.</p>
+    <div class="card3d" id="dashCard">
+      <div class="orb"></div>
+      <small>Número de cuenta (demo)</small>
+      <span class="num" id="dashNum">—</span>
+      <small>Saldo ficticio disponible</small>
+      <div class="saldo" id="dashSaldo">$0.00</div>
+      <div class="owner" id="dashOwner">—</div>
+    </div>
+    <div class="acct">
+      <div class="row"><span>Estado</span><span id="dashEstado">activa</span></div>
+      <div class="row"><span>Tipo</span><span>Ahorro individual</span></div>
+      <div class="row"><span>Creada</span><span id="dashFecha">—</span></div>
+    </div>
+    <div class="actions">
+      <button class="btn btn-ghost" id="btnCopy2" type="button">Copiar número de cuenta</button>
+    </div>
+  </section>
+
+</main>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function(){
+  'use strict';
+
+  const $ = id => document.getElementById(id);
+  const screens = document.querySelectorAll('.screen');
+  let toastTimer;
+  function toast(msg, isErr){
+    const t = $('toast');
+    t.textContent = msg;
+    t.classList.toggle('err', !!isErr);
+    t.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => t.classList.remove('show'), 3200);
+  }
+  function buzz(p){ if (navigator.vibrate) try{ navigator.vibrate(p); }catch(e){} }
+  const enc = new TextEncoder(), dec = new TextDecoder();
+
+  // ===== Utilidades WebCrypto =====
+  function b64(buf){
+    return btoa(String.fromCharCode(...new Uint8Array(buf)));
+  }
+  function unb64(str){
+    return Uint8Array.from(atob(str), c => c.charCodeAt(0)).buffer;
+  }
+  function getRandom(n){ return crypto.getRandomValues(new Uint8Array(n)); }
+
+  // ===== Cifrado con clave derivada del PIN (PBKDF2 + AES-GCM) =====
+  const SALT_KEY = 'nova_salt';
+  const VERIFIER_KEY = 'nova_verifier';
+  function getSalt(){
+    let s = localStorage.getItem(SALT_KEY);
+    if (!s){ const raw = getRandom(16); s = b64(raw); localStorage.setItem(SALT_KEY, s); }
+    return unb64(s);
+  }
+  async function deriveKey(pin){
+    if (!crypto?.subtle) throw new Error('WebCrypto no disponible');
+    const baseKey = await crypto.subtle.importKey('raw', enc.encode(pin), 'PBKDF2', false, ['deriveKey']);
+    return crypto.subtle.deriveKey(
+      { name:'PBKDF2', salt:getSalt(), iterations:210000, hash:'SHA-256' },
+      baseKey, { name:'AES-GCM', length:256 }, false, ['encrypt','decrypt']
+    );
+  }
+  async function encryptJSON(obj, key){
+    const iv = getRandom(12);
+    const data = enc.encode(JSON.stringify(obj));
+    const ct = await crypto.subtle.encrypt({ name:'AES-GCM', iv }, key, data);
+    return { iv:b64(iv), ct:b64(ct) };
+  }
+  async function decryptJSON(payload, key){
+    const iv = unb64(payload.iv);
+    const pt = await crypto.subtle.decrypt({ name:'AES-GCM', iv }, key, unb64(payload.ct));
+    return JSON.parse(dec.decode(pt));
+  }
+  async function setVerifier(key){
+    const v = await encryptJSON({ v:'nova-ok', t:Date.now() }, key);
+    localStorage.setItem(VERIFIER_KEY, JSON.stringify(v));
+  }
+  async function checkVerifier(key){
+    try {
+      const raw = localStorage.getItem(VERIFIER_KEY);
+      if (!raw) return false;
+      const obj = await decryptJSON(JSON.parse(raw), key);
+      return obj && obj.v === 'nova-ok';
+    } catch(e){ return false; }
+  }
+  function hasVerifier(){ return !!localStorage.getItem(VERIFIER_KEY); }
+
+  // ===== Cámaras =====
+  const cams = {
+    register: { videoEl:$('video'), ovalEl:$('oval'), hintEl:$('hint'), barEl:$('bar'), fillEl:$('barFill'), pctEl:$('pct'), btnEl:$('btnScan'), fallbackEl:$('fallback'), stream:null, ok:false },
+    login:    { videoEl:$('videoLogin'), ovalEl:$('ovalLogin'), hintEl:$('hintLogin'), barEl:$('barLogin'), fillEl:$('barFillLogin'), pctEl:$('pctLogin'), btnEl:$('btnScanLogin'), fallbackEl:$('fallbackLogin'), stream:null, ok:false }
+  };
+  function camReset(c){
+    c.ovalEl.classList.remove('scanning','ok','warn');
+    c.barEl.classList.remove('show');
+    c.fillEl.style.width = '0%';
+    c.pctEl.textContent = '';
+    c.btnEl.textContent = 'Escanear rostro';
+    c.btnEl.disabled = false;
+  }
+  function camStop(c){
+    if (c.stream){ c.stream.getTracks().forEach(t => t.stop()); c.stream = null; }
+    c.videoEl.srcObject = null;
+    c.ok = false;
+  }
+  async function camStart(c){
+    camReset(c);
+    c.hintEl.textContent = 'Activando cámara…';
+    c.btnEl.disabled = true;
+    try {
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        throw Object.assign(new Error('no-api'), { name:'NotSupportedError' });
+      }
+      c.stream = await navigator.mediaDevices.getUserMedia({
+        video:{ facingMode:'user', width:{ideal:720}, height:{ideal:960} }, audio:false
+      });
+      c.videoEl.srcObject = c.stream;
+      await c.videoEl.play();
+      c.ok = true;
+      c.fallbackEl.style.display = 'none';
+      c.hintEl.textContent = 'Centra tu rostro en el círculo y pulsa «Escanear rostro».';
+      c.btnEl.textContent = 'Escanear rostro';
+    } catch (err){
+      c.ok = false;
+      c.fallbackEl.style.display = 'flex';
+      if (err && err.name === 'NotAllowedError') c.hintEl.textContent = 'Permiso de cámara denegado.';
+      else if (err && err.name === 'NotFoundError') c.hintEl.textContent = 'No se encontró ninguna cámara.';
+      else c.hintEl.textContent = 'Cámara no disponible.';
+      c.btnEl.textContent = 'Reintentar cámara';
+    }
+    c.btnEl.disabled = false;
+  }
+  function stopAllCams(){ camStop(cams.register); camStop(cams.login); }
+  document.addEventListener('visibilitychange', () => { if (document.hidden) stopAllCams(); });
+  window.addEventListener('blur', stopAllCams);
+  window.addEventListener('pagehide', stopAllCams);
+
+  // ===== Navegación =====
+  function go(id){
+    stopAllCams();
+    screens.forEach(s => s.classList.toggle('active', s.id === id));
+    window.scrollTo(0,0);
+    if (id === 's-face') camStart(cams.register);
+    if (id === 's-login') renderAccounts();
+    if (id === 's-login-face') camStart(cams.login);
+    if (id === 's-pin') preparePinScreen();
+  }
+  document.querySelectorAll('[data-go]').forEach(b => b.addEventListener('click', () => go(b.dataset.go)));
+
+  // ===== Almacenamiento cifrado =====
+  const KEY = 'nova-cuentas-v1';
+  let activeKey = null; // CryptoKey en memoria mientras dura la sesión
+
+  function loadEncrypted(){
+    try {
+      const raw = localStorage.getItem(KEY);
+      if (!raw) return null;
+      return JSON.parse(raw);
+    } catch(e){ return null; }
+  }
+  function saveEncrypted(payload){
+    try { localStorage.setItem(KEY, JSON.stringify(payload)); return true; }
+    catch(e){ toast('No se pudo guardar (almacenamiento lleno o bloqueado)', true); return false; }
+  }
+  // Valida estructura mínima de cada cuenta al descifrar
+  function sanitizeCuenta(c){
+    if (!c || typeof c !== 'object') return null;
+    const s = {
+      id: String(c.id || ''),
+      nombres: String(c.nombres || '').slice(0,80),
+      cedula: String(c.cedula || '').replace(/\D/g,'').slice(0,13),
+      correo: String(c.correo || '').toLowerCase().trim().slice(0,120),
+      telefono: String(c.telefono || '').replace(/\D/g,'').slice(0,12),
+      numeroCuenta: String(c.numeroCuenta || '').slice(0,20),
+      saldo: Number.isFinite(+c.saldo) ? Math.max(0, +c.saldo) : 0,
+      estado: String(c.estado || 'activa').slice(0,20),
+      creadoEn: String(c.creadoEn || new Date().toISOString()).slice(0,40),
+      biometriaSamples: Array.isArray(c.biometriaSamples)
+        ? c.biometriaSamples.filter(v => Array.isArray(v) && v.length === 32 && v.every(n => Number.isFinite(n))).slice(0,3)
+        : []
+    };
+    if (!s.id || !s.nombres || !s.numeroCuenta) return null;
+    return s;
+  }
+
+  // ===== Sesión =====
+  const SESSION_KEY = 'nova_session';
+  const SESSION_SLIDING_MS = 1000*60*15;
+  const SESSION_ABSOLUTE_MS = 1000*60*60*8;
+  function saveSession(cuenta){
+    const prev = getActiveSessionRaw();
+    const iat = prev && prev.iat ? prev.iat : Date.now();
+    sessionStorage.setItem(SESSION_KEY, JSON.stringify({
+      id: cuenta.id,
+      iat,
+      exp: Math.min(iat + SESSION_ABSOLUTE_MS, Date.now() + SESSION_SLIDING_MS)
+    }));
+  }
+  function getActiveSessionRaw(){
+    try { return JSON.parse(sessionStorage.getItem(SESSION_KEY) || 'null'); }
+    catch(e){ return null; }
+  }
+  function getActiveSession(){
+    const s = getActiveSessionRaw();
+    if (!s) return null;
+    if (typeof s.exp !== 'number' || s.exp <= Date.now() || (s.iat && Date.now() - s.iat > SESSION_ABSOLUTE_MS)) {
+      sessionStorage.removeItem(SESSION_KEY);
+      return null;
+    }
+    return s;
+  }
+  async function restoreSessionIfAny(){
+    const s = getActiveSession();
+    if (!s || !activeKey) return false;
+    try {
+      const payload = loadEncrypted();
+      if (!payload) return false;
+      const cuentas = (await decryptJSON(payload, activeKey)).map(sanitizeCuenta).filter(Boolean);
+      const cuenta = cuentas.find(c => c.id === s.id);
+      if (cuenta){ showDashboard(cuenta); return true; }
+    } catch(e){}
+    return false;
+  }
+
+  // ===== Descriptor facial (igual lógica HOG+grid) =====
+  const WORK = 96;
+  const workCanvas = document.createElement('canvas');
+  workCanvas.width = WORK; workCanvas.height = WORK;
+  const workCtx = workCanvas.getContext('2d', { willReadFrequently:true });
+
+  function captureDescriptor(videoEl){
+    if (!videoEl.videoWidth) return null;
+    const vw = videoEl.videoWidth, vh = videoEl.videoHeight;
+    const side = Math.min(vw, vh) * 0.72;
+    const sx = (vw - side) / 2, sy = (vh - side) / 2;
+    workCtx.drawImage(videoEl, sx, sy, side, side, 0, 0, WORK, WORK);
+    const data = workCtx.getImageData(0, 0, WORK, WORK).data;
+    const gray = new Float32Array(WORK * WORK);
+    for (let i = 0; i < WORK*WORK; i++){
+      const idx = i * 4;
+      gray[i] = (0.299*data[idx] + 0.587*data[idx+1] + 0.114*data[idx+2]) / 255;
+    }
+    const bins = new Float32Array(8);
+    let magTotal = 0;
+    for (let y = 1; y < WORK-1; y++){
+      for (let x = 1; x < WORK-1; x++){
+        const i = y*WORK + x;
+        const gx = gray[i+1] - gray[i-1];
+        const gy = gray[i+WORK] - gray[i-WORK];
+        const mag = Math.sqrt(gx*gx + gy*gy);
+        if (mag < 0.02) continue;
+        let ang = Math.atan2(gy, gx);
+        if (ang < 0) ang += Math.PI;
+        const bin = Math.floor(ang / Math.PI * 8) % 8;
+        bins[bin] += mag;
+        magTotal += mag;
+      }
+    }
+    if (magTotal > 0) for (let i = 0; i < 8; i++) bins[i] /= magTotal;
+    const grid = new Float32Array(16);
+    const cell = WORK / 4;
+    let meanGlobal = 0;
+    for (let i = 0; i < WORK*WORK; i++) meanGlobal += gray[i];
+    meanGlobal /= (WORK*WORK);
+    for (let gy = 0; gy < 4; gy++){
+      for (let gx = 0; gx < 4; gx++){
+        let sum = 0, n = 0;
+        for (let y = 0; y < cell; y++){
+          for (let x = 0; x < cell; x++){
+            sum += gray[(gy*cell + y)*WORK + (gx*cell + x)];
+            n++;
+          }
+        }
+        grid[gy*4 + gx] = (sum / n) - meanGlobal;
+      }
+    }
+    const sym = new Float32Array(8);
+    for (let x = 0; x < 8; x++){
+      const xl = Math.floor((x + 0.5) * WORK / 8);
+      const xr = WORK - 1 - xl;
+      let diff = 0, n = 0;
+      for (let y = 0; y < WORK; y += 2){
+        diff += Math.abs(gray[y*WORK + xl] - gray[y*WORK + xr]);
+        n++;
+      }
+      sym[x] = n ? diff / n : 0;
+    }
+    const vec = new Array(32);
+    for (let i = 0; i < 8; i++) vec[i] = bins[i];
+    for (let i = 0; i < 16; i++) vec[8 + i] = grid[i];
+    for (let i = 0; i < 8; i++) vec[24 + i] = sym[i];
+    return vec;
+  }
+
+  // Prueba de vida básica: variación de brillo medio entre dos muestras
+  function meanBrightness(videoEl){
+    if (!videoEl.videoWidth) return null;
+    const vw = videoEl.videoWidth, vh = videoEl.videoHeight;
+    const side = Math.min(vw, vh) * 0.72;
+    const sx = (vw - side) / 2, sy = (vh - side) / 2;
+    workCtx.drawImage(videoEl, sx, sy, side, side, 0, 0, 48, 48);
+    const d = workCtx.getImageData(0,0,48,48).data;
+    let s = 0;
+    for (let i = 0; i < d.length; i += 4) s += (d[i]+d[i+1]+d[i+2])/3;
+    return s / (48*48);
+  }
+  async function captureSamples(videoEl, count, delayMs){
+    const samples = [];
+    const bright = [];
+    for (let i = 0; i < count; i++){
+      const d = captureDescriptor(videoEl);
+      const b = meanBrightness(videoEl);
+      if (d) samples.push(d);
+      if (b != null) bright.push(b);
+      await new Promise(r => setTimeout(r, delayMs));
+    }
+    if (!samples.length) return { descriptor:null, liveness:false };
+    const med = new Array(samples[0].length).fill(0);
+    for (let k = 0; k < med.length; k++){
+      const vals = samples.map(s => s[k]).sort((a,b) => a-b);
+      med[k] = vals[Math.floor(vals.length/2)];
+    }
+    // Variación mínima entre brillos (heurística, no prueba de vida real)
+    let variation = 0;
+    if (bright.length >= 2){
+      const max = Math.max(...bright), min = Math.min(...bright);
+      variation = (max - min) / 255;
+    }
+    return { descriptor: med, liveness: variation > 0.02 };
+  }
+
+  function cosineSim(a, b){
+    let dot = 0, na = 0, nb = 0;
+    for (let i = 0; i < a.length; i++){ dot += a[i]*b[i]; na += a[i]*a[i]; nb += b[i]*b[i]; }
+    if (!na || !nb) return 0;
+    return dot / (Math.sqrt(na) * Math.sqrt(nb));
+  }
+  const LOGIN_THRESHOLD = 0.86;
+
+  function matchAgainstSamples(descriptor, cuenta){
+    const samples = cuenta.biometriaSamples || [];
+    if (!samples.length || !descriptor) return { ok:false, best:0 };
+    let best = -Infinity;
+    for (const s of samples){
+      if (!Array.isArray(s) || s.length !== descriptor.length) continue;
+      const sim = cosineSim(descriptor, s);
+      if (sim > best) best = sim;
+    }
+    if (best === -Infinity) return { ok:false, best:0 };
+    return { ok: best >= LOGIN_THRESHOLD, best };
+  }
+
+  async function runScanAnimation(c, msgs){
+    c.btnEl.disabled = true;
+    c.ovalEl.classList.add('scanning');
+    c.barEl.classList.add('show');
+    let p = 0;
+    const bar = setInterval(() => {
+      p = Math.min(100, p + 3 + Math.random()*4);
+      c.fillEl.style.width = p + '%';
+      c.pctEl.textContent = Math.round(p) + '%';
+    }, 120);
+    c.hintEl.textContent = msgs[0] || 'Detectando rostro…';
+    await new Promise(r => setTimeout(r, 1300));
+    c.hintEl.textContent = msgs[1] || 'Mantén el rostro quieto…';
+    await new Promise(r => setTimeout(r, 1300));
+    c.hintEl.textContent = msgs[2] || 'Procesando rostro…';
+    const result = await captureSamples(c.videoEl, 6, 200);
+    await new Promise(r => {
+      const iv = setInterval(() => {
+        p = Math.min(100, p + 8);
+        c.fillEl.style.width = p + '%';
+        c.pctEl.textContent = Math.round(p) + '%';
+        if (p >= 100){ clearInterval(iv); r(); }
+      }, 60);
+    });
+    clearInterval(bar);
+    return result;
+  }
+
+  // ===== Validación =====
+  function normEmail(v){ return v.trim().toLowerCase(); }
+  function normPhone(v){ return v.replace(/[^\d]/g,''); }
+  const rules = {
+    nombres:  v => v.trim().split(/\s+/).filter(Boolean).length >= 2 && v.trim().length >= 5,
+    cedula:   v => /^\d{8,13}$/.test(v),
+    correo:   v => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(normEmail(v)),
+    telefono: v => /^\d{9,12}$/.test(normPhone(v))
+  };
+  Object.keys(rules).forEach(k => {
+    const el = $(k);
+    if (el) el.addEventListener('input', () => el.parentElement.classList.remove('bad'));
+  });
+  $('cedula').addEventListener('input', e => e.target.value = e.target.value.replace(/\D/g,''));
+
+  // ===== Estado del flujo =====
+  let pendingUser = null;
+  let cuentaPendiente = null;
+  let enviandoRegistro = false;
+  let loginTarget = null;
+  let loginAttempts = {}; // { cuentaId: { count, until } }
+  const ATTEMPT_MAX = 5;
+  const ATTEMPT_BLOCK_MS = 60*1000;
+
+  function canAttempt(id){
+    const a = loginAttempts[id];
+    if (!a) return true;
+    if (a.until && a.until > Date.now()) return false;
+    if (a.until && a.until <= Date.now()){ loginAttempts[id] = { count:0, until:0 }; }
+    return true;
+  }
+  function registerFail(id){
+    const a = loginAttempts[id] || { count:0, until:0 };
+    a.count++;
+    if (a.count >= ATTEMPT_MAX){ a.until = Date.now() + ATTEMPT_BLOCK_MS; a.count = 0; }
+    loginAttempts[id] = a;
+  }
+
+  // ===== Formulario =====
+  $('form').addEventListener('submit', e => {
+    e.preventDefault();
+    if (enviandoRegistro) return;
+    let ok = true;
+    Object.keys(rules).forEach(k => {
+      const valid = rules[k]($(k).value);
+      $(k).parentElement.classList.toggle('bad', !valid);
+      if (!valid && ok) $(k).focus();
+      ok = ok && valid;
+    });
+    if (!ok) return;
+    enviandoRegistro = true;
+    const btn = $('btnSubmitRegistro');
+    btn.disabled = true;
+    btn.textContent = 'Verificando…';
+    pendingUser = {
+      nombres: $('nombres').value.trim(),
+      cedula: $('cedula').value,
+      correo: normEmail($('correo').value),
+      telefono: normPhone($('telefono').value)
+    };
+    setTimeout(() => {
+      enviandoRegistro = false;
+      btn.disabled = false;
+      btn.textContent = 'Continuar →';
+      $('consentCheck').checked = false;
+      $('btnConsent').disabled = true;
+      go('s-consent');
+    }, 400);
+  });
+
+  $('faceBack').addEventListener('click', () => go('s-face'));
+  $('consentCheck').addEventListener('change', e => {
+    $('btnConsent').disabled = !e.target.checked;
+  });
+  $('btnConsent').addEventListener('click', () => {
+    if (!$('consentCheck').checked) return;
+    go('s-face');
+  });
+
+  function genNumeroCuenta(){
+    const r = n => Array.from({length:n}, () => Math.floor(Math.random()*10)).join('');
+    return r(4) + ' ' + r(4) + ' ' + r(4);
+  }
+  function randomSaldo(){
+    const v = 50 + Math.random() * 4950;
+    return Math.round(v * 100) / 100;
+  }
+  function fmtMoney(n){
+    return n.toLocaleString('es-EC', { style:'currency', currency:'USD' });
+  }
+  function maskNum(n){
+    const digits = n.replace(/\s/g,'');
+    return '•••• •••• ' + digits.slice(-4);
+  }
+
+  $('btnScan').addEventListener('click', async () => {
+    const c = cams.register;
+    if (!c.ok){ camStart(c); return; }
+    if (!pendingUser){ toast('Completa el formulario primero', true); go('s-register'); return; }
+
+    const payload = loadEncrypted();
+    let existing = [];
+    if (payload && activeKey){
+      try { existing = (await decryptJSON(payload, activeKey)).map(sanitizeCuenta).filter(Boolean); }
+      catch(e){ toast('No se pudo leer el almacenamiento. Verifica tu PIN.', true); return; }
+    }
+    if (existing.some(x => x.cedula === pendingUser.cedula)){
+      toast('Esta cédula ya tiene una cuenta. Inicia sesión.', true); return;
+    }
+    if (existing.some(x => x.correo === pendingUser.correo)){
+      toast('Este correo ya tiene una cuenta. Inicia sesión.', true); return;
+    }
+
+    const msgs = ['Detectando rostro…','Mantén el rostro quieto…','Capturando muestras…'];
+    const { descriptor, liveness } = await runScanAnimation(c, msgs);
+
+    if (!descriptor){
+      c.ovalEl.classList.remove('scanning');
+      c.ovalEl.classList.add('warn');
+      c.hintEl.textContent = 'No se pudo capturar tu rostro. Reintenta.';
+      c.btnEl.disabled = false;
+      return;
+    }
+    if (!liveness){
+      c.ovalEl.classList.remove('scanning');
+      c.ovalEl.classList.add('warn');
+      c.hintEl.textContent = 'No detectamos variación de brillo. ¿Es una foto? Mueve un poco la cabeza e inténtalo otra vez.';
+      toast('Prueba de vida básica no superada', true);
+      c.btnEl.disabled = false;
+      return;
+    }
+    const extra = await captureSamples(c.videoEl, 6, 180);
+    const samples = [descriptor];
+    if (extra && extra.descriptor) samples.push(extra.descriptor);
+
+    cuentaPendiente = {
+      id: 'c_' + Date.now() + '_' + Math.random().toString(36).slice(2,8),
+      nombres: pendingUser.nombres,
+      cedula: pendingUser.cedula,
+      correo: pendingUser.correo,
+      telefono: pendingUser.telefono,
+      numeroCuenta: genNumeroCuenta(),
+      saldo: randomSaldo(),
+      estado: 'activa',
+      creadoEn: new Date().toISOString(),
+      biometriaSamples: samples
+    };
+
+    c.ovalEl.classList.remove('scanning');
+    c.ovalEl.classList.add('ok');
+    c.hintEl.textContent = 'Identidad registrada localmente';
+    buzz([30, 40, 30]);
+
+    setTimeout(() => {
+      const first = cuentaPendiente.nombres.split(' ')[0];
+      $('doneTitle').textContent = '¡Bienvenido o bienvenida, ' + first + '!';
+      $('acctNum').textContent = cuentaPendiente.numeroCuenta;
+      animateMoney($('doneSaldo'), cuentaPendiente.saldo);
+      $('btnSave').disabled = false;
+      $('btnSave').textContent = 'Guardar cuenta';
+      go('s-done');
+    }, 800);
+  });
+
+  // ===== Guardar con PIN =====
+  $('btnSave').addEventListener('click', () => {
+    if (!cuentaPendiente){ toast('No hay cuenta pendiente de guardar', true); return; }
+    if (!hasVerifier()){
+      $('pinNew').value = ''; $('pinConfirm').value = '';
+      $('pinNew').parentElement.classList.remove('bad');
+      $('pinConfirm').parentElement.classList.remove('bad');
+      go('s-pin-set');
+    } else {
+      // Ya hay cuentas cifradas: pedir PIN para añadir nueva
+      $('pinInput').value = '';
+      $('pinInput').parentElement.classList.remove('bad');
+      go('s-pin');
+      // El botón "Desbloquear" añadirá la cuenta pendiente
+      $('btnPinUnlock').dataset.mode = 'add';
+    }
+  });
+
+  $('pinSetBack').addEventListener('click', () => go('s-done'));
+
+  $('btnPinSave').addEventListener('click', async () => {
+    const p1 = $('pinNew').value, p2 = $('pinConfirm').value;
+    let ok = true;
+    $('pinNew').parentElement.classList.toggle('bad', !/^\d{6}$/.test(p1));
+    if (!/^\d{6}$/.test(p1)) ok = false;
+    $('pinConfirm').parentElement.classList.toggle('bad', p1 !== p2);
+    if (p1 !== p2) ok = false;
+    if (!ok) return;
+    if (!cuentaPendiente){ toast('No hay cuenta pendiente', true); return; }
+    try {
+      const key = await deriveKey(p1);
+      // Verificar que podemos re-cifrar payload existente si lo hay
+      let cuentas = [];
+      const prev = loadEncrypted();
+      if (prev){
+        try { cuentas = (await decryptJSON(prev, key)).map(sanitizeCuenta).filter(Boolean); }
+        catch(e){ toast('PIN incorrecto para cuentas existentes', true); return; }
+      }
+      if (cuentas.some(x => x.cedula === cuentaPendiente.cedula || x.correo === cuentaPendiente.correo)){
+        toast('Esta cuenta ya fue guardada', true); return;
+      }
+      cuentas.push(cuentaPendiente);
+      const payload = await encryptJSON(cuentas, key);
+      if (!saveEncrypted(payload)) return;
+      await setVerifier(key);
+      activeKey = key;
+      toast('✅ Cuenta cifrada y guardada');
+      $('btnSave').disabled = true;
+      $('btnSave').textContent = 'Cuenta guardada ✓';
+      buzz([50, 30, 50]);
+      cuentaPendiente = null;
+      pendingUser = null;
+      setTimeout(() => go('s-welcome'), 900);
+    } catch(e){
+      toast('No se pudo cifrar: ' + (e.message || 'error'), true);
+    }
+  });
+
+  // ===== Login =====
+  $('btnLogin').addEventListener('click', () => {
+    if (hasVerifier()){
+      $('pinInput').value = '';
+      $('pinInput').parentElement.classList.remove('bad');
+      go('s-pin');
+    } else {
+      go('s-login');
+    }
+  });
+
+  function preparePinScreen(){
+    $('btnPinUnlock').dataset.mode = 'login';
+    $('pinAccountsContainer').innerHTML = '';
+  }
+  $('pinBack').addEventListener('click', () => go('s-welcome'));
+
+  $('btnPinUnlock').addEventListener('click', async () => {
+    const pin = $('pinInput').value;
+    if (!/^\d{6}$/.test(pin)){
+      $('pinInput').parentElement.classList.add('bad');
+      return;
+    }
+    $('pinInput').parentElement.classList.remove('bad');
+    try {
+      const key = await deriveKey(pin);
+      if (!await checkVerifier(key)){
+        $('pinInput').parentElement.classList.add('bad');
+        toast('PIN incorrecto', true);
+        return;
+      }
+      activeKey = key;
+      const payload = loadEncrypted();
+      const cuentas = payload ? (await decryptJSON(payload, key)).map(sanitizeCuenta).filter(Boolean) : [];
+      if ($('btnPinUnlock').dataset.mode === 'add' && cuentaPendiente){
+        cuentas.push(cuentaPendiente);
+        const newPayload = await encryptJSON(cuentas, key);
+        if (!saveEncrypted(newPayload)) return;
+        toast('✅ Cuenta añadida cifrada');
+        cuentaPendiente = null; pendingUser = null;
+        setTimeout(() => go('s-welcome'), 900);
+        return;
+      }
+      loginAccounts = cuentas;
+      go('s-login');
+    } catch(e){
+      $('pinInput').parentElement.classList.add('bad');
+      toast('No se pudo descifrar', true);
+    }
+  });
+
+  let loginAccounts = [];
+  function renderAccounts(){
+    const cont = $('accountsContainer');
+    cont.innerHTML = '';
+    if (!loginAccounts.length){
+      const empty = document.createElement('div');
+      empty.className = 'empty-state';
+      empty.textContent = 'Aún no hay cuentas guardadas en este dispositivo. Abre una cuenta nueva para empezar.';
+      cont.appendChild(empty);
+      return;
+    }
+    const title = document.createElement('p');
+    title.className = 'lead';
+    title.style.marginTop = '0'; title.style.fontSize = '.78rem';
+    title.textContent = 'Cuentas guardadas en este dispositivo:';
+    cont.appendChild(title);
+    const list = document.createElement('div');
+    list.className = 'accounts-list';
+    list.setAttribute('role', 'listbox');
+    loginAccounts.forEach(c => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'account-item';
+      btn.setAttribute('role', 'option');
+      btn.setAttribute('aria-selected', 'false');
+      btn.setAttribute('aria-label', 'Iniciar sesión como ' + c.nombres);
+      const initials = c.nombres.trim().split(/\s+/).slice(0,2).map(w => w[0].toUpperCase()).join('');
+      const avatar = document.createElement('div');
+      avatar.className = 'avatar';
+      const span = document.createElement('span');
+      span.textContent = initials || '?';
+      avatar.appendChild(span);
+      const info = document.createElement('div');
+      info.className = 'info';
+      const strong = document.createElement('strong');
+      strong.textContent = c.nombres;
+      const small = document.createElement('small');
+      small.className = 'masked';
+      small.textContent = maskNum(c.numeroCuenta);
+      info.appendChild(strong); info.appendChild(small);
+      const chev = document.createElement('div');
+      chev.className = 'chev'; chev.textContent = '›';
+      btn.appendChild(avatar); btn.appendChild(info); btn.appendChild(chev);
+      btn.addEventListener('click', () => {
+        list.querySelectorAll('.account-item').forEach(el => el.setAttribute('aria-selected','false'));
+        btn.setAttribute('aria-selected','true');
+        loginTarget = c;
+        setTimeout(startLoginFace, 120);
+      });
+      list.appendChild(btn);
+    });
+    cont.appendChild(list);
+  }
+
+  function startLoginFace(){
+    if (!loginTarget) return;
+    $('loginFaceLead').textContent = 'Confirma tu identidad con reconocimiento facial.';
+    const info = $('selectedAccountInfo');
+    info.innerHTML = '';
+    const badge = document.createElement('div');
+    badge.className = 'selected-badge';
+    badge.textContent = loginTarget.nombres + ' · ' + maskNum(loginTarget.numeroCuenta);
+    info.appendChild(badge);
+    go('s-login-face');
+  }
+
+  $('loginFaceBack').addEventListener('click', () => {
+    loginTarget = null;
+    go('s-login');
+  });
+
+  $('btnScanLogin').addEventListener('click', async () => {
+    const c = cams.login;
+    if (!loginTarget){ toast('Selecciona una cuenta primero', true); go('s-login'); return; }
+    if (!c.ok){ camStart(c); return; }
+    if (!canAttempt(loginTarget.id)){
+      toast('Demasiados intentos. Espera un minuto.', true);
+      return;
+    }
+    const msgs = ['Detectando rostro…','Mantén el rostro quieto…','Comparando con tu registro…'];
+    const { descriptor, liveness } = await runScanAnimation(c, msgs);
+    if (!descriptor){
+      c.ovalEl.classList.remove('scanning');
+      c.ovalEl.classList.add('warn');
+      c.hintEl.textContent = 'No se pudo capturar tu rostro. Reintenta.';
+      c.btnEl.disabled = false;
+      return;
+    }
+    if (!liveness){
+      c.ovalEl.classList.remove('scanning');
+      c.ovalEl.classList.add('warn');
+      c.hintEl.textContent = 'No detectamos variación de brillo. ¿Es una foto? Inténtalo otra vez.';
+      registerFail(loginTarget.id);
+      c.btnEl.disabled = false;
+      return;
+    }
+    const { ok } = matchAgainstSamples(descriptor, loginTarget);
+    if (ok){
+      c.ovalEl.classList.remove('scanning');
+      c.ovalEl.classList.add('ok');
+      c.hintEl.textContent = 'Rostro verificado ✓';
+      buzz([20, 50, 20]);
+      saveSession(loginTarget);
+      const cuenta = loginTarget;
+      loginTarget = null;
+      setTimeout(() => showDashboard(cuenta), 800);
+    } else {
+      registerFail(loginTarget.id);
+      c.ovalEl.classList.remove('scanning');
+      c.ovalEl.classList.add('warn');
+      c.hintEl.textContent = 'Rostro no coincide. Intenta de nuevo.';
+      toast('Verificación fallida. Intenta de nuevo.', true);
+      buzz([60, 40, 60]);
+      c.btnEl.disabled = false;
+    }
+  });
+
+  function showDashboard(cuenta){
+    const first = cuenta.nombres.split(' ')[0];
+    $('dashHello').textContent = 'Hola de nuevo, ' + first;
+    $('dashNum').textContent = cuenta.numeroCuenta;
+    $('dashOwner').textContent = cuenta.nombres;
+    $('dashEstado').textContent = cuenta.estado;
+    $('dashFecha').textContent = new Date(cuenta.creadoEn).toLocaleDateString('es-EC');
+    animateMoney($('dashSaldo'), cuenta.saldo);
+    go('s-dashboard');
+  }
+
+  function animateMoney(el, target){
+    const dur = 1200, start = performance.now();
+    function frame(t){
+      const k = Math.min(1, (t - start) / dur);
+      const eased = 1 - Math.pow(1 - k, 3);
+      el.textContent = fmtMoney(target * eased);
+      if (k < 1) requestAnimationFrame(frame);
+      else el.textContent = fmtMoney(target);
+    }
+    requestAnimationFrame(frame);
+  }
+
+  async function copyNum(el){
+    const txt = el.textContent.replace(/\s/g,'');
+    try { await navigator.clipboard.writeText(txt); toast('Número copiado'); }
+    catch(e){ toast('No se pudo copiar', true); }
+  }
+  $('btnCopy').addEventListener('click', () => copyNum($('acctNum')));
+  $('btnCopy2').addEventListener('click', () => copyNum($('dashNum')));
+
+  $('btnRestart').addEventListener('click', () => {
+    $('form').reset();
+    pendingUser = null; cuentaPendiente = null;
+    go('s-welcome');
+  });
+  $('btnLogout').addEventListener('click', () => {
+    sessionStorage.removeItem(SESSION_KEY);
+    loginTarget = null;
+    activeKey = null;
+    go('s-welcome');
+    toast('Sesión cerrada');
+  });
+
+  // Renovación sliding con tope absoluto
+  ['click','keydown','touchstart'].forEach(ev =>
+    document.addEventListener(ev, () => {
+      const s = getActiveSession();
+      if (s && activeKey){
+        const iat = s.iat || Date.now();
+        sessionStorage.setItem(SESSION_KEY, JSON.stringify({
+          id: s.id, iat,
+          exp: Math.min(iat + SESSION_ABSOLUTE_MS, Date.now() + SESSION_SLIDING_MS)
+        }));
+      }
+    }, { passive:true })
+  );
+
+  // ===== Arranque =====
+  (async function boot(){
+    if (!crypto?.subtle){
+      $('loaderMsg').textContent = 'Tu navegador no soporta WebCrypto; el cifrado no está disponible.';
+      return;
+    }
+    getSalt(); // garantiza salt
+    $('loader').classList.add('hide');
+    // No restauramos sesión automáticamente: requiere PIN para descifrar
+  })();
+})();
+</script>
+</body>
+</html>
